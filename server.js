@@ -23,7 +23,7 @@ var restify = require('restify');
 //=========================================================
 // Bots functions
 //=========================================================
-/*
+
 function execute(query){
     if(!query)
         return null;
@@ -50,7 +50,7 @@ function execute(query){
 
     return null;
 }
-*/
+
 
 //=========================================================
 // Bots Dialogs
@@ -62,11 +62,12 @@ bot.dialog('/', [
      },
      function(session, result){
          session.userData.profile = result.response;
-         session.send('Hello %(name)s',session.userData.profile);
+         session.send('Hello %(name)s !',session.userData.profile);
+         session.beginDialog('/calculate');
      }
  ]);
 
-
+// greating dialog
 bot.dialog('/ensureProfile',[
     function(session, args, next){
         session.dialogData.profile = args || {};
@@ -80,16 +81,27 @@ bot.dialog('/ensureProfile',[
         if(result.response){
             session.dialogData.profile.name = result.response;
         }
-        if(!session.dialogData.profile.company){
-            builder.Prompts.text(session, "What company do you work for?");
-        }else{
-            next();
-        }
+        session.endDialogWithResult({ response : session.dialogData.profile});
+    }
+]);
+
+// calculation dialog
+bot.dialog('/calculate',[
+    function(session, next){
+         var introMessage = 'I\'m a bot designed & develped by Majdi!';
+         introMessage += '\nI still learning a lot from Majdi, but now I can do those simple actions : ';
+         introMessage += '\n * calculate NUMBER + NUMBER (ex: calculate 1 + 5)';
+         builder.Prompts.text(session, introMessage);
     },
     function(session, result){
         if(result.response){
-            session.dialogData.profile.company = result.response;
-        }
-        session.endDialogWithResult({ response : session.dialogData.profile});
+              var query = result.response;
+              var botResponse = execute(query);
+              if(botResponse != null)
+                 session.send("Hum it's " + botResponse);
+              else
+                session.send("Oh it's so difficult! I'm not smart enough :( )");
+       }
+       session.endDialog();
     }
 ]);
