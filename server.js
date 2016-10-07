@@ -72,7 +72,7 @@ bot.dialog('/ensureProfile',[
     function(session, args, next){
         session.dialogData.profile = args || {};
         if(!session.dialogData.profile.name){
-            builder.Prompts.text(session,"What's your name ?");
+            builder.Prompts.text(session,"Hi there, what's your name ?");
         }else{
             next();
         }
@@ -88,8 +88,8 @@ bot.dialog('/ensureProfile',[
 // calculation dialog
 bot.dialog('/calculate',[
     function(session, next){
-         var introMessage = 'I\'m a bot designed & develped by Majdi!';
-         introMessage += '\nI still learning a lot from Majdi, but now I can do those simple actions : ';
+         var introMessage = 'I\'m a bot designed & develped by Majdi! \n';
+         introMessage += '\n I still learning a lot from Majdi, but now I can do those simple actions : ';
          introMessage += '\n * calculate NUMBER + NUMBER (ex: calculate 1 + 5)';
          builder.Prompts.text(session, introMessage);
     },
@@ -98,7 +98,7 @@ bot.dialog('/calculate',[
               var query = result.response;
               var botResponse = execute(query);
               if(botResponse != null)
-                 session.send("Hum it's " + botResponse);
+                 session.send("Humm it's " + botResponse);
               else
                 session.send("Oh it's so difficult! I'm not smart enough :( )");
        }
