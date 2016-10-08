@@ -34,21 +34,12 @@ function execute(query){
         return null;
     
     var numbers = query.substring(9,query.length);
-
-    var num1 = numbers.substring(0,numbers.indexOf("+"));
-    var num2 = numbers.substring(numbers.indexOf("+")+1,numbers.length);
-    
-    if(isNaN(num1) || isNaN(num2))
+    try{
+        return eval(numbers);
+    }catch(err){
         return null;
-
-    num1 = parseInt(num1.trim());
-    num2 = parseInt(num2.trim());
-    
-    if(Number.isInteger(num1) && Number.isInteger(num2)){
-        return num1 + num2;
     }
 
-    return null;
 }
 
 
@@ -89,8 +80,8 @@ bot.dialog('/ensureProfile',[
 bot.dialog('/calculate',[
     function(session, next){
          var introMessage = 'I\'m a bot designed & develped by Majdi! \n';
-         introMessage += '\n I still learning a lot from Majdi, but now I can do those simple actions : ';
-         introMessage += '\n * calculate NUMBER + NUMBER (ex: calculate 1 + 5)';
+         introMessage += '\nI still learning a lot from Majdi, but now I can do those simple actions : \n';
+         introMessage += '\n* calculate NUMBER + NUMBER (ex: calculate 1 + 5, calculate (10/5) * 2)';
          builder.Prompts.text(session, introMessage);
     },
     function(session, result){
