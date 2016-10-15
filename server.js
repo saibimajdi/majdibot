@@ -50,7 +50,11 @@ function execute(query){
 bot.dialog('/', [
      function(session){
          var options = ['calculate','search','play'];
-         builder.Prompts.choice(session,'Hi there, wich option do you choose?',options);
+         var cards = options.map(function(item){ return createCard(session, item); });
+
+         var messages = new builder.Message(session).attachments(cards).attachmentLayout('carousel');
+         session.send(messages);
+         //builder.Prompts.choice(session,'Hi there, wich option do you choose?',options);
         // session.beginDialog('/ensureProfile',session.userData.profile);
      },
      function(session, result){
@@ -60,6 +64,14 @@ bot.dialog('/', [
          session.send('You choosed %s', result.response.entity);
      }
  ]);
+
+function createCard(session, item){
+    var card = new builder.ThumbnailCard(session);
+    card.title(item);
+    card.images([builder.CardImage.create(session, 'https://fbcdn-sphotos-c-a.akamaihd.net/hphotos-ak-xap1/v/t1.0-9/14568166_1622390904727332_3365595751762562420_n.png?oh=66949cba6fa4a6b5458b06e18ca52ce8&oe=58A45D5A&__gda__=1486356323_89c0ef37ccc6515735d96177bb1eba52')]);
+    card.tap(new builder.CardAction.openUrl(session, 'http://saibimajdi.com'));
+    return card;
+}
 
 // greating dialog
 bot.dialog('/ensureProfile',[
