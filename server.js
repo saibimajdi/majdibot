@@ -49,15 +49,15 @@ function execute(query){
 
 bot.dialog('/', [
      function(session){
-         session.beginDialog('/ensureProfile',session.userData.profile);
+         var options = ['calculate','search','play'];
+         builder.Prompts.choice(session,'Hi there, wich option do you choose?',options);
+        // session.beginDialog('/ensureProfile',session.userData.profile);
      },
      function(session, result){
-         session.userData.profile = result.response;
-         if(session.userData.profile.name.toLowerCase() == 'emina' || session.userData.profile.name.toLowerCase() == 'amina')
-            session.send('Heeelloooooooo mammouni <3');
-         else
-            session.send('Hello %(name)s !',session.userData.profile);
-         session.beginDialog('/calculate');
+         //session.userData.profile = result.response;
+         //session.send('Hello %(name)s !',session.userData.profile);
+         //session.beginDialog('/calculate');
+         session.send('You choosed %s', result.response.entity);
      }
  ]);
 
@@ -82,16 +82,12 @@ bot.dialog('/ensureProfile',[
 // calculation dialog
 bot.dialog('/calculate',[
     function(session, next){
+
          var introMessage;
-         if(session.userData.profile.name.toLowerCase() == 'emina' || session.userData.profile.name.toLowerCase() == 'amina'){
-             introMessage = 'Mammouni chou habibek chnowa 3alemni :D ! \n';
-         }
-         else{
-            introMessage  = 'I\'m a bot designed & develped by Majdi! \n';
-            introMessage += '\nI still learning a lot from Majdi, but now I can do those simple actions : \n';
-         }
-         
+         introMessage  = 'I\'m a bot designed & develped by Majdi! \n';
+         introMessage += '\nI still learning a lot from Majdi, but now I can do those simple actions : \n';
          introMessage += '\n* calculate NUMBER + NUMBER (ex: calculate 1 + 5, calculate (10/5) * 2)';
+
          builder.Prompts.text(session, introMessage);
     },
     function(session, result){
