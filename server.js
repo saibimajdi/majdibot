@@ -75,6 +75,7 @@ bot.dialog('/', [
          //session.userData.profile = result.response;
          //session.send('Hello %(name)s !',session.userData.profile);
          //session.beginDialog('/calculate');
+         session.userData.profile = result.response;
          session.send("Hi %s! Majdi tells me a lot about you :D", session.userData.profile.name);
          session.beginDialog('/menu');
      }
@@ -162,9 +163,9 @@ bot.dialog('/ensureProfile',[
         }
     },
     function(session, result, next){
-        if(result.response){
+          if(result.response){
             session.dialogData.profile.name = result.response;
         }
-        session.endDialogWithResult({ response : session.dialogData.profile});
-    }
+        session.endDialogWithResult({ response : session.dialogData.profile });
+     }
 ]);
