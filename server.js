@@ -98,16 +98,14 @@ bot.dialog('/menu',[
             if(result.response.entity == "website"){
                 var messages = new builder.Message(session).attachments([createCard(session)]).attachmentLayout('carousel');
                 session.send(messages);
-                session.endDialog();
-                //session.beginDialog('/menu');
+                builder.Prompts.choice(session,"Need more ?",["back to menu"]);
             }else{
                 if(result.response.entity == "secrets"){
                     session.beginDialog('/secrets');
                 }else{
                     if(menuOptions.indexOf(result.response.entity) >= 0){
                         session.send(menuContent[result.response.entity]);
-                        session.endDialog();
-                        builder.Prompts.choice(session,"",["back to menu"]);
+                        builder.Prompts.choice(session,"Need more ?",["back to menu"]);
                     }else{
                         session.send("Wrong choice :/ ");
                         session.endDialog();
@@ -139,7 +137,7 @@ bot.dialog('/secrets',[
                 builder.Prompts.text(session, "Please enter the correct password!");
             }else{
                 session.send("Sorry, I can't tell you any Majdi's secret!");
-                builder.Prompts.choice(session,"",["back to menu"]);
+                builder.Prompts.choice(session,"Need more ?",["back to menu"]);
             }
         }
     },
@@ -172,5 +170,3 @@ bot.dialog('/ensureProfile',[
         session.endDialogWithResult({ response : session.dialogData.profile});
     }
 ]);
-
-
