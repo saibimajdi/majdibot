@@ -106,6 +106,7 @@ bot.dialog('/menu',[
                 }else{
                     if(menuOptions.indexOf(result.response.entity) >= 0){
                         session.send(menuContent[result.response.entity]);
+                        session.endDialog();
                         builder.Prompts.choice(session,"",["back to menu"]);
                     }else{
                         session.send("Wrong choice :/ ");
