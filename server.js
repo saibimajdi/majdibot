@@ -53,7 +53,7 @@ var menuContent = {
 };
 
 // menu options
-var menuOptions = ["education","experiences","friends","sport","dream","weaknesses","strengths","secrets"];
+var menuOptions = ["education","experiences","friends","sport","dream","weaknesses","strengths","secrets","website"];
 
 //=========================================================
 // Bots Dialogs
@@ -95,67 +95,64 @@ bot.dialog('/menu',[
     },
     function(session, result){
         if(result.response){
-            if(result.response.entity == "secrets"){
-                builder.Prompts.choice(session, "Sorry, I don't have the permission to do that only if you have a password from Majdi!",["yes","no"]);
+            if(result.response.entity == "website"){
+                var messages = new builder.Message(session).attachments([createCard(session)]).attachmentLayout('carousel');
+                session.send(messages);
+                session.endDialog();
+                //session.beginDialog('/menu');
             }else{
-                console.log('indexOf: ' + menuOptions.indexOf(result.response.entity));
-                console.log('choice:' + result.response.entity);
-                console.log('x :' + menuOptions[0]);
-                if(menuOptions.indexOf(result.response.entity) >= 0){
-                    session.send(menuContent[result.response.entity]);
-                    var messages = new builder.Message(session).attachments([createCard(session)]).attachmentLayout('carousel');
-                    session.send(messages);
-                    builder.Prompts.choice(session,"",["back to menu"]);
+                if(result.response.entity == "secrets"){
+                    session.beginDialog('/secrets');
                 }else{
-                    session.send("Wrong choice :/ ");
-                    session.endDialog();
-                    session.beginDialog('/menu');
+                    if(menuOptions.indexOf(result.response.entity) >= 0){
+                        session.send(menuContent[result.response.entity]);
+                        builder.Prompts.choice(session,"",["back to menu"]);
+                    }else{
+                        session.send("Wrong choice :/ ");
+                        session.endDialog();
+                        session.beginDialog('/menu');
+                    }
                 }
             }
-            
         }else{
             session.endDialog();
         }
     },
     function(session, result){
         if(result.response.entity){
-            if(result.response.entity == "back to menu"){
                 session.endDialog();
                 session.beginDialog('/menu');
                 return;
-            }
+        }
+    }
+]);
+
+// secrets dialog
+bot.dialog('/secrets',[
+    function(session){
+        builder.Prompts.choice(session, "Sorry, I don't have the permission to do that only if you have a password from Majdi!",["yes","no"]);
+    },
+    function(session, result){
+        if(result.response.entity){
             if(result.response.entity == "yes"){
                 builder.Prompts.text(session, "Please enter the correct password!");
             }else{
                 session.send("Sorry, I can't tell you any Majdi's secret!");
-                var messages = new builder.Message(session).attachments([createCard(session)]).attachmentLayout('carousel');
-                session.send(messages);
                 builder.Prompts.choice(session,"",["back to menu"]);
             }
         }
     },
     function(session, result){
-        if(result.response){
-            if(result.response.entity == "back to menu"){
-                session.endDialog();
-                session.beginDialog('/menu');
-                return;
-            }
             if(result.response == "MajdiPass"){
                 session.send('Majdi has a girlfriend, he loves her so much and they will be married ASAP :D <3 Please do not tell anyone!');
             }else{
                 session.send('No, wrong password!');
             }
-            var messages = new builder.Message(session).attachments([createCard(session)]).attachmentLayout('carousel');
-            session.send(messages);
-            builder.Prompts.choice(session,"",[" back to menu"]);
-        }
-    },
-    function(session){
-        session.endDialog();
-        session.beginDialog('/menu');
+            session.endDialog();
+            session.beginDialog('/menu');
     }
 ]);
+
 
 // greating dialog
 bot.dialog('/ensureProfile',[
