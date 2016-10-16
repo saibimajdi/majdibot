@@ -104,8 +104,7 @@ bot.dialog('/menu',[
                     session.beginDialog('/secrets');
                 }else{
                     if(menuOptions.indexOf(result.response.entity) >= 0){
-                        session.send(menuContent[result.response.entity]);
-                        builder.Prompts.choice(session,"Need more ?",["back to menu"]);
+                        builder.Prompts.choice(session,menuContent[result.response.entity],["back to menu"]);
                     }else{
                         session.send("Wrong choice :/ ");
                         session.endDialog();
@@ -129,15 +128,14 @@ bot.dialog('/menu',[
 // secrets dialog
 bot.dialog('/secrets',[
     function(session){
-        builder.Prompts.choice(session, "Sorry, I don't have the permission to do that only if you have a password from Majdi!",["yes","no"]);
+        builder.Prompts.choice(session, "Sorry, I don't have the permission to do that only if you have a password from Majdi! Do you have a password?",["yes","no"]);
     },
     function(session, result){
         if(result.response.entity){
             if(result.response.entity == "yes"){
                 builder.Prompts.text(session, "Please enter the correct password!");
             }else{
-                session.send("Sorry, I can't tell you any Majdi's secret!");
-                builder.Prompts.choice(session,"Need more ?",["back to menu"]);
+                builder.Prompts.choice(session,"Sorry, I can't tell you any Majdi's secret!",["back to menu"]);
             }
         }
     },
