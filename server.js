@@ -41,7 +41,19 @@ function execute(query){
     }
 
 }
+// menu content
+var menuContent = {
+    "education":"Majdi is doing a Master degree in Engineering in Computer Systems, he got his Bachelor degree in 2015 from Faculty of Sciences of Monastir.",
+    "experiences":"Humm, I can't tell you all Majdi's experiences but here is some of them.\nMajdi is a Microsoft Student Partner for the 3er year, he did an internship at Microsoft Tunisia. Last summer he worked as a FullStack developer at Ernst.",
+    "friends":"Majdi has a lot of friends and you are one of them because your are discussing with me :D",
+    "sport":"Majdi was Hand ball player with Sidi Bouzid Hanball Team for 5 years (2003 - 2008)",
+    "dream":"Majdi dreams to build his own company (MacdoW) with his brothers (Chames, Dhia and Oussama)",
+    "weaknesses":"Majdi smokes a lot :( Yes this is a big problem!",
+    "strengths":"He is a dreamer, curious and always wants to learn more about new technologies. \nFor this reason he built me :D"
+};
 
+// menu options
+var menuOptions = ["education","experiences","friends","sport","dream","weaknesses","strengths","secrets"];
 
 //=========================================================
 // Bots Dialogs
@@ -49,29 +61,87 @@ function execute(query){
 
 bot.dialog('/', [
      function(session){
-         var options = ['calculate','search','play'];
-         var cards = options.map(function(item){ return createCard(session, item); });
+         //var options = ['calculate','search','play'];
+         //var cards = options.map(function(item){ return createCard(session, item); });
 
-         var messages = new builder.Message(session).attachments(cards).attachmentLayout('carousel');
-         session.send(messages);
+         //var messages = new builder.Message(session).attachments(cards).attachmentLayout('carousel');
+         //session.send(messages);
          //builder.Prompts.choice(session,'Hi there, wich option do you choose?',options);
-        // session.beginDialog('/ensureProfile',session.userData.profile);
+         //session.beginDialog('/ensureProfile',session.userData.profile);
+         
+         session.beginDialog('/ensureProfile',session.userData.profile);
      },
      function(session, result){
          //session.userData.profile = result.response;
          //session.send('Hello %(name)s !',session.userData.profile);
          //session.beginDialog('/calculate');
-         session.send('You choosed %s', result.response.entity);
+         session.send("Hi %s! Majdi tells me a lot about you :D", session.userData.profile.name);
+         session.beginDialog('/menu');
      }
  ]);
 
-function createCard(session, item){
+function createCard(session){
     var card = new builder.ThumbnailCard(session);
-    card.title(item);
-    card.images([builder.CardImage.create(session, 'https://fbcdn-sphotos-c-a.akamaihd.net/hphotos-ak-xap1/v/t1.0-9/14568166_1622390904727332_3365595751762562420_n.png?oh=66949cba6fa4a6b5458b06e18ca52ce8&oe=58A45D5A&__gda__=1486356323_89c0ef37ccc6515735d96177bb1eba52')]);
+    card.title("Majdi Saibi website");
+    card.subtitle("Visit Majdi's website to know more about him!");
+    card.images([builder.CardImage.create(session, 'http://saibimajdi.com/images/shared.png')]);
     card.tap(new builder.CardAction.openUrl(session, 'http://saibimajdi.com'));
     return card;
 }
+// menu dialog 
+bot.dialog('/menu',[
+    function(session){
+        builder.Prompts.choice(session, "What do you want to know about Majdi ?", menuOptions);
+    },
+    function(session, result){
+        if(result.response){
+            if(result.response.entity == "secrets"){
+                builder.Prompts.choice(session, "Sorry, I don't have the permission to do that only if you have a password from Majdi!",["yes","no"]);
+            }else{
+                console.log('indexOf: ',menuOptions.indexOf(result.response));
+                if(menuOptions.indexOf(result.response.entity) > 0){
+                    session.send(menuContent[result.response.entity]);
+                }else{
+                    session.send("Wrong choice :/ ");
+                    session.beginDialog('/menu');
+                }
+            }
+            
+        }else{
+            session.endDialog();
+        }
+    },
+    function(session, result){
+        if(result.response.entity){
+            if(result.response.entity == "yes"){
+                builder.Prompts.text(session, "Please enter the correct password!");
+            }else{
+                session.send("Sorry, I can't tell you any Majdi's secret!");
+                var messages = new builder.Message(session).attachments([createCard(session)]).attachmentLayout('carousel');
+                session.send(messages);
+                builder.Prompts.choice(session,"",[" back to menu"]);
+            }
+        }
+    },
+    function(session, result){
+        if(result.response){
+            if(result.response == "MajdiPass"){
+                session.send('Majdi has a girlfriend, he loves her so much and they will be married ASAP :D <3 Please do not tell anyone!');
+                var messages = new builder.Message(session).attachments([createCard(session)]).attachmentLayout('carousel');
+                session.send(messages);
+                builder.Prompts.choice(session,"",[" back to menu"]);
+            }else{
+                session.send('No, wrong password!');
+                var messages = new builder.Message(session).attachments([createCard(session)]).attachmentLayout('carousel');
+                session.send(messages);
+                builder.Prompts.choice(session,"",[" back to menu"]);
+            }
+        }
+    },
+    function(session){
+        session.beginDialog('/menu');
+    }
+]);
 
 // greating dialog
 bot.dialog('/ensureProfile',[
@@ -91,26 +161,4 @@ bot.dialog('/ensureProfile',[
     }
 ]);
 
-// calculation dialog
-bot.dialog('/calculate',[
-    function(session, next){
 
-         var introMessage;
-         introMessage  = 'I\'m a bot designed & develped by Majdi! \n';
-         introMessage += '\nI still learning a lot from Majdi, but now I can do those simple actions : \n';
-         introMessage += '\n* calculate NUMBER + NUMBER (ex: calculate 1 + 5, calculate (10/5) * 2)';
-
-         builder.Prompts.text(session, introMessage);
-    },
-    function(session, result){
-        if(result.response){
-              var query = result.response;
-              var botResponse = execute(query);
-              if(botResponse != null)
-                 session.send("Humm it's " + botResponse);
-              else
-                session.send("Oh it's so difficult! I'm not smart enough :( ");
-       }
-       session.endDialog();
-    }
-]);
