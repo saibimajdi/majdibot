@@ -44,9 +44,9 @@ function execute(query){
 // menu content
 var menuContent = {
     "education":"Majdi is doing a Master degree in Engineering in Computer Systems, he got his Bachelor degree in 2015 from Faculty of Sciences of Monastir.",
-    "experiences":"Humm, I can't tell you all Majdi's experiences but here is some of them.\nMajdi is a Microsoft Student Partner for the 3er year, he did an internship at Microsoft Tunisia. Last summer he worked as a FullStack developer at Ernst.",
-    "friends":"Majdi has a lot of friends and you are one of them because your are discussing with me :D",
-    "sport":"Majdi was Hand ball player with Sidi Bouzid Hanball Team for 5 years (2003 - 2008)",
+    "experiences":"Humm, I can't tell you all Majdi's experiences but here is some of them.\nMajdi is a Microsoft Student Partner for the 3rd year, he did an internship at Microsoft Tunisia. Last summer he worked as a FullStack developer at Ernst.",
+    "friends":"Majdi has a lot of friends and you are one of them because you are discussing with me :D",
+    "sport":"Majdi was Hand ball player with Sidi Bouzid Hanball Team for 5 years (2003 - 2008)!",
     "dream":"Majdi dreams to build his own company (MacdoW) with his brothers (Chames, Dhia and Oussama)",
     "weaknesses":"Majdi smokes a lot :( Yes this is a big problem!",
     "strengths":"He is a dreamer, curious and always wants to learn more about new technologies. \nFor this reason he built me :D"
@@ -98,11 +98,17 @@ bot.dialog('/menu',[
             if(result.response.entity == "secrets"){
                 builder.Prompts.choice(session, "Sorry, I don't have the permission to do that only if you have a password from Majdi!",["yes","no"]);
             }else{
-                console.log('indexOf: ',menuOptions.indexOf(result.response));
-                if(menuOptions.indexOf(result.response.entity) > 0){
+                console.log('indexOf: ' + menuOptions.indexOf(result.response.entity));
+                console.log('choice:' + result.response.entity);
+                console.log('x :' + menuOptions[0]);
+                if(menuOptions.indexOf(result.response.entity) >= 0){
                     session.send(menuContent[result.response.entity]);
+                    var messages = new builder.Message(session).attachments([createCard(session)]).attachmentLayout('carousel');
+                    session.send(messages);
+                    builder.Prompts.choice(session,"",["back to menu"]);
                 }else{
                     session.send("Wrong choice :/ ");
+                    session.endDialog();
                     session.beginDialog('/menu');
                 }
             }
@@ -113,32 +119,40 @@ bot.dialog('/menu',[
     },
     function(session, result){
         if(result.response.entity){
+            if(result.response.entity == "back to menu"){
+                session.endDialog();
+                session.beginDialog('/menu');
+                return;
+            }
             if(result.response.entity == "yes"){
                 builder.Prompts.text(session, "Please enter the correct password!");
             }else{
                 session.send("Sorry, I can't tell you any Majdi's secret!");
                 var messages = new builder.Message(session).attachments([createCard(session)]).attachmentLayout('carousel');
                 session.send(messages);
-                builder.Prompts.choice(session,"",[" back to menu"]);
+                builder.Prompts.choice(session,"",["back to menu"]);
             }
         }
     },
     function(session, result){
         if(result.response){
+            if(result.response.entity == "back to menu"){
+                session.endDialog();
+                session.beginDialog('/menu');
+                return;
+            }
             if(result.response == "MajdiPass"){
                 session.send('Majdi has a girlfriend, he loves her so much and they will be married ASAP :D <3 Please do not tell anyone!');
-                var messages = new builder.Message(session).attachments([createCard(session)]).attachmentLayout('carousel');
-                session.send(messages);
-                builder.Prompts.choice(session,"",[" back to menu"]);
             }else{
                 session.send('No, wrong password!');
-                var messages = new builder.Message(session).attachments([createCard(session)]).attachmentLayout('carousel');
-                session.send(messages);
-                builder.Prompts.choice(session,"",[" back to menu"]);
             }
+            var messages = new builder.Message(session).attachments([createCard(session)]).attachmentLayout('carousel');
+            session.send(messages);
+            builder.Prompts.choice(session,"",[" back to menu"]);
         }
     },
     function(session){
+        session.endDialog();
         session.beginDialog('/menu');
     }
 ]);
